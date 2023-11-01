@@ -10,6 +10,7 @@
 // additional includes (should you need them), go here
 //  ...
 
+#include <map>
 
 class Horspool
 {
@@ -59,5 +60,8 @@ protected:
   // your data members (and helper functions, if you need them), go here:
   //  ...
   // 
+
+  std::map<char, uint8_t> lookuptab{};
+  std::string pattern = {};
 
 };
