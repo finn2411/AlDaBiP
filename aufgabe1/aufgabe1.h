@@ -61,7 +61,7 @@ protected:
   //  ...
   // 
 
-  std::map<char, uint8_t> lookuptab{};
+  std::map<char, uint32_t> lookuptab{};
   std::string pattern = {};
 
 };
