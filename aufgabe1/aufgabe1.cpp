@@ -23,42 +23,34 @@ const std::string& Horspool::getPattern() const
     return Horspool::pattern;
 }
 
-/*
+
 std::vector<size_t> Horspool::getHits(const std::string& text) const
 {
-    std::vector<size_t> hits ={};
-    std::string mask = {};
-    uint32_t length = Horspool::pattern.size();
-
-
-    for (uint32_t begin = 0; begin < text.size() - length; )
+    std::vector<size_t> hits;
+    hits.resize(0);
+    size_t pos = 0;
+    while (pos <= text.size() - Horspool::pattern.size())
     {
-        mask = text.substr(begin, begin+length);
-
-        for (uint32_t currpos = length; currpos >= 0; )
+        size_t maskpos = Horspool::pattern.size() - 1;
+        while (maskpos > 0 && text[pos+maskpos] == Horspool::pattern[maskpos])
         {
-            if (currpos == 0 && mask[currpos] == Horspool::pattern[currpos])
-            {
-                Horspool::alignCheck_(currpos);
-                hits.push_back(begin);
-            }
-            else if(mask[currpos] == Horspool::pattern[currpos])
-            {
-                Horspool::alignCheck_(currpos);
-                currpos--;
-            }
-            else
-            {
-                Horspool::alignCheck_(currpos);
-                begin += Horspool::getShift_(mask[currpos]);
-                break;
-            }
+            Horspool::alignCheck_(pos+maskpos);
+            maskpos--;
         }
+        
+        if (maskpos == 0)
+        {
+            Horspool::alignCheck_(pos);
+            hits.push_back(pos+1);
+        }
+
+        pos += Horspool::getShift_(text[pos+Horspool::pattern.size()]);
     }
     return hits;
 }
-*/
 
+
+/*
 std::vector<size_t> Horspool::getHits(const std::string& text) const {
     std::vector<size_t> hits;
     size_t text_len = text.size();
@@ -79,7 +71,7 @@ std::vector<size_t> Horspool::getHits(const std::string& text) const {
 
     return hits;
 }
-
+*/
 uint32_t Horspool::getShift_(const char last_char) const
 {
     auto it = Horspool::lookuptab.find(last_char);
