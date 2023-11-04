@@ -48,6 +48,10 @@ std::vector<size_t> Horspool::getHits(const std::string &text) const
 
 uint32_t Horspool::getShift_(const char last_char) const
 {
+    if (Horspool::pattern.back() == '?')
+    {
+        return 1;
+    }
     auto it = Horspool::lookuptab.find(last_char);
     if (it != Horspool::lookuptab.end())
     {
