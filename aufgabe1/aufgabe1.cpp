@@ -25,22 +25,29 @@ const std::string &Horspool::getPattern() const
 
 std::vector<size_t> Horspool::getHits(const std::string &text) const
 {
-    std::vector<size_t> hits;
+    std::vector<size_t> hits{};
     size_t text_pos = 0;
+    size_t maskpos = 0;
+    if ((text.size() < pattern.size()) || text.empty() || pattern.empty()) // HIER (direkt abbrechen, falls pattern größer als Text (kann nicht passen), ODER falls Pattern oder text leer sind)
+    {
+        return {};
+    }
     while (text_pos <= text.size() - Horspool::pattern.size())
     {
-        size_t maskpos = Horspool::pattern.size() - 1;
-        while ((maskpos > 0 && text[text_pos + maskpos] == Horspool::pattern[maskpos]) || (maskpos > 0 && Horspool::pattern[maskpos] == '?') || (maskpos > 0 && text[text_pos + maskpos] == '?'))
+        maskpos = Horspool::pattern.size();
+        while ((maskpos > 0 && (text[text_pos + maskpos - 1] == Horspool::pattern[maskpos - 1])) || (maskpos > 0 && text[text_pos + maskpos - 1] == '?') || (maskpos > 0 && Horspool::pattern[maskpos - 1] == '?')) // HIER (-1 hinzugefügt, aufgrund der Indizes)
         {
             maskpos--;
         }
 
-        if ((maskpos == 0 && text[text_pos] == Horspool::pattern[0]) || (maskpos == 0 && Horspool::pattern[maskpos] == '?') || (maskpos == 0 && text[text_pos + maskpos] == '?'))
+        if (maskpos == 0) // HIER (kürzeres if, der Rest war unnötig)
         {
             hits.push_back(text_pos);
         }
 
-        Horspool::alignCheck_(text_pos);
+        // std::cout << text_pos << std::endl;
+        alignCheck_(text_pos);
+        // std::cout << Horspool::getShift_(text[text_pos + Horspool::pattern.size() - 1]) << std::endl; 
         text_pos += Horspool::getShift_(text[text_pos + Horspool::pattern.size() - 1]);
     }
     return hits;
@@ -55,10 +62,10 @@ uint32_t Horspool::getShift_(const char last_char) const
     auto it = Horspool::lookuptab.find(last_char);
     if (it != Horspool::lookuptab.end())
     {
-        return Horspool::lookuptab.at(last_char);
+        return Horspool::lookuptab.at(last_char);   // char in lookuptab
     }
     else
     {
-        return Horspool::pattern.size();
+        return Horspool::pattern.size();    // char not in lookuptab
     }
 }
