@@ -10,12 +10,15 @@ aufgabe1.cpp
 
 void Horspool::setPattern(const std::string &pat)
 {
-    Horspool::pattern = pat;
-
-    uint32_t length = pat.size();
-    for (uint32_t position = 0; position < (length - 1); position++)
+    if (pat.size() > 0)
     {
-        Horspool::lookuptab[pat[position]] = length - position - 1;
+        Horspool::pattern = pat;
+
+        uint32_t length = pat.size();
+        for (uint32_t position = 0; position < (length - 1); position++)
+        {
+            Horspool::lookuptab[pat[position]] = length - position - 1;
+        }
     }
 }
 
