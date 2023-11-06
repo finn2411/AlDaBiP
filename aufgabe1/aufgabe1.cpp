@@ -1,4 +1,5 @@
-/*
+/* 
+Mobarak ALmoustafa
 Finn Thierolf
 01.11.2023
 aufgabe1.cpp
