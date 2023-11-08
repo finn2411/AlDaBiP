@@ -36,9 +36,9 @@ std::vector<size_t> Horspool::getHits(const std::string &text) const
     {
         return {};
     }
-    while (text_pos <= text.size() - Horspool::pattern.size())
+    while (text_pos <= text.size() - pattern.size())
     {
-        maskpos = Horspool::pattern.size();
+        maskpos = pattern.size();
         while ((maskpos > 0 && (text[text_pos + maskpos - 1] == Horspool::pattern[maskpos - 1])) || (maskpos > 0 && text[text_pos + maskpos - 1] == '?') || (maskpos > 0 && Horspool::pattern[maskpos - 1] == '?')) // HIER (-1 hinzugefügt, aufgrund der Indizes)
         {
             maskpos--;
@@ -68,6 +68,11 @@ uint32_t Horspool::getShift_(const char last_char) const
     {
         return Horspool::lookuptab.at(last_char);   // char in lookuptab
     }
+    /* Alternative: 
+    if (lookuptab.count(last_char) == 1)
+    {
+        return Horspool::lookuptab.at(last_char);
+    }*/
     else
     {
         return Horspool::pattern.size();    // char not in lookuptab
