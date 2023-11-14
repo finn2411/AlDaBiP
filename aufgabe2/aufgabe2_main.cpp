@@ -18,6 +18,8 @@ int main(int argc, const char* argv[])
     }
 
     std::vector<uint32_t> suffixArray = {};
+    std::vector<uint32_t> hits = {};
+
 
     if (argc < 3)
     {
@@ -26,6 +28,13 @@ int main(int argc, const char* argv[])
         {
             std::cout << element << std::endl;
         }
+    }
+
+
+    else
+    {
+        construct(suffixArray, argv[1]);
+        find(argv[2], suffixArray, argv[1], hits);
     }
 
 }
