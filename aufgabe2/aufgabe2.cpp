@@ -30,6 +30,10 @@ void construct(std::vector<uint32_t>& sa, const std::string& text)
                 return text[a + index] < text[b + index];
             }
             ++index;
+            if (a + index >= text.size() || b + index >= text.size())
+            {
+                break;
+            }
         }
         return a > b;
     });
@@ -38,83 +42,137 @@ void construct(std::vector<uint32_t>& sa, const std::string& text)
 
 void find(const std::string& query, const std::vector<uint32_t>& sa, const std::string& text, std::vector<uint32_t>& hits)
 {
+    // falls query leer
+    if (query == "")
+    {
+        return;
+    }
+
+    // sonst:
     hits.clear();
-    // position of query in text
-    uint32_t queryPos = text.rfind(query);
-    // positon of query in suffix array
-    uint32_t queryPosSa = std::distance(sa.begin(), std::find(sa.begin(), sa.end(), queryPos));
+    uint32_t l = 0;
+    uint32_t r = 0;
+    uint32_t M = 0;
+    uint32_t equal = 0; // zählt gleiche Stellen für mlr
+    std::pair<uint32_t, uint32_t> LR (0,sa.size()-1);
+
+    // lambda function to compare strings
+    auto isSmalEq = [query, text] (const uint32_t& saPos, const uint32_t& mlr, uint32_t& equal)
+    {
+        // reset equal
+        equal = 0;
+        for (uint32_t counter = saPos+mlr; counter-saPos < query.size() && counter < text.size();)
+        {
+            if (query[counter-saPos] == text[counter])
+            {
+                counter ++;
+                equal++;
+            }
+            else
+            {
+                return query[counter-saPos] <= text[counter];
+            }
+        }
+        if (query.size() < text.size())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    };
+
+    auto isGreEq = [query, text] (const uint32_t& saPos, const uint32_t& mlr, uint32_t& equal)
+    {
+        // reset equal
+        equal = 0;
+        for (uint32_t counter = saPos+mlr; counter-saPos < query.size() && counter < text.size();)
+        {
+            if (query[counter-saPos] == text[counter])
+            {
+                counter ++;
+                equal++;
+            }
+            else
+            {
+                return query[counter-saPos] >= text[counter];
+            }
+        }
+        return true;
+    };
 
     // calculate Lp
-    // create (L,R) pair
-    std::pair<uint32_t, uint32_t> LR (0,sa.size()-1);
     uint32_t Lp = 0;
 
-    if (queryPosSa <= 1)
+    if (isSmalEq(sa[0], 0, equal))
     {
         Lp = 0;
     }
 
-    else if (queryPosSa > sa.size())
+    else if (!isSmalEq(sa[sa.size()-1], std::min(l,r), equal))
     {
-        Lp = sa.size() + 1;
+        Lp = sa.size();
     }
 
     else
     {
-        while (LR.second - LR.first > 1)
+        while(LR.second - LR.first > 1)
         {
-            uint32_t M = static_cast<uint32_t>(std::ceil(static_cast<double>(LR.second + LR.first) / 2));
-            if (queryPosSa <= M)
+            M = static_cast<uint32_t>(std::ceil(static_cast<double>(LR.second + LR.first) / 2));
+            if (isSmalEq(sa[M], std::min(l,r), equal))
             {
                 LR.second = M;
+                r = equal;
             }
             else
             {
                 LR.first = M;
+                l = equal;
             }
         }
         Lp = LR.second;
     }
 
-    // create (L,R) pair
+    // reset values
+    l = 0;
+    r = 0;
     LR = {0,sa.size()-1};
+
+    // calculate Rp
     uint32_t Rp = 0;
 
-    if (queryPosSa > sa.size())
+    if (isGreEq(sa[sa.size()-1], 0, equal))
     {
-        Rp = sa.size() + 1;
+        Rp = sa.size();
+    }
+
+    else if (!isGreEq(sa[0], std::min(l,r), equal))
+    {
+        Rp = 0;
     }
 
     else
     {
-        while (LR.second - LR.first > 1)
+        while(LR.second - LR.first > 1)
         {
-            uint32_t M = static_cast<uint32_t>(std::ceil(static_cast<double>(LR.second + LR.first) / 2));
-            if (queryPosSa >= M)
+            M = static_cast<uint32_t>(std::ceil(static_cast<double>(LR.second + LR.first) / 2));
+            if (isGreEq(sa[M], std::min(l,r), equal))
             {
-                LR.second = M;
+                LR.first = M;
+                l = equal;
             }
             else
             {
-                LR.first = M;
+                LR.second = M;
+                r = equal;
             }
         }
         Rp = LR.first;
     }
 
-
-    for (size_t counter = Lp; counter < Rp; counter ++)
+    for (uint32_t counter = Lp; counter <= Rp; counter++)
     {
         hits.push_back(sa[counter]);
-        std::cout << sa[counter] << std::endl;
     }
-}
-
-int main()
-{
-    std::vector<uint32_t> suffixArray = {};
-    std::vector<uint32_t> hits = {};
-
-    construct(suffixArray, "banana");
-    find("a", suffixArray, "banana", hits);
 }

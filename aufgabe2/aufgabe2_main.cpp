@@ -6,6 +6,7 @@
 */
 
 #include <iostream>
+#include <algorithm>
 #include "aufgabe2.hpp"
 
 int main(int argc, const char* argv[])
@@ -20,21 +21,29 @@ int main(int argc, const char* argv[])
     std::vector<uint32_t> suffixArray = {};
     std::vector<uint32_t> hits = {};
 
+    construct(suffixArray, argv[1]);
 
     if (argc < 3)
     {
-        construct(suffixArray, argv[1]);
         for (const uint32_t element : suffixArray)
         {
             std::cout << element << std::endl;
         }
     }
 
-
     else
     {
-        construct(suffixArray, argv[1]);
-        find(argv[2], suffixArray, argv[1], hits);
+        for (int32_t counter = 2; counter < argc; counter++)
+        {
+            std::cout << argv[counter] << ": ";
+            find(argv[counter], suffixArray, argv[1], hits);
+            std::sort(hits.begin(), hits.end());
+            for (uint32_t element : hits)
+            {
+                std::cout << element << " ";
+            }
+            std::cout << std::endl;
+        }
     }
 
 }
