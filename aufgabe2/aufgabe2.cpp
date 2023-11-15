@@ -73,14 +73,7 @@ void find(const std::string& query, const std::vector<uint32_t>& sa, const std::
                 return query[counter-saPos] <= text[counter];
             }
         }
-        if (query.size() < text.size())
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return true;
     };
 
     auto isGreEq = [query, text] (const uint32_t& saPos, const uint32_t& mlr, uint32_t& equal)
@@ -144,7 +137,7 @@ void find(const std::string& query, const std::vector<uint32_t>& sa, const std::
 
     if (isGreEq(sa[sa.size()-1], 0, equal))
     {
-        Rp = sa.size();
+        Rp = sa.size() - 1;
     }
 
     else if (!isGreEq(sa[0], std::min(l,r), equal))
@@ -171,8 +164,12 @@ void find(const std::string& query, const std::vector<uint32_t>& sa, const std::
         Rp = LR.first;
     }
 
+
+
     for (uint32_t counter = Lp; counter <= Rp; counter++)
     {
         hits.push_back(sa[counter]);
     }
+    std::sort(hits.begin(), hits.end());
 }
+

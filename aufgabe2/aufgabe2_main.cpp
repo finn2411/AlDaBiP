@@ -37,7 +37,6 @@ int main(int argc, const char* argv[])
         {
             std::cout << argv[counter] << ": ";
             find(argv[counter], suffixArray, argv[1], hits);
-            std::sort(hits.begin(), hits.end());
             for (uint32_t element : hits)
             {
                 std::cout << element << " ";
@@ -45,5 +44,4 @@ int main(int argc, const char* argv[])
             std::cout << std::endl;
         }
     }
-
 }
