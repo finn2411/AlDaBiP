@@ -42,6 +42,8 @@ void construct(std::vector<uint32_t>& sa, const std::string& text)
 
 void find(const std::string& query, const std::vector<uint32_t>& sa, const std::string& text, std::vector<uint32_t>& hits)
 {
+    hits.clear();
+
     // falls query leer
     if (query == "" || text == "")
     {
@@ -49,7 +51,6 @@ void find(const std::string& query, const std::vector<uint32_t>& sa, const std::
     }
 
     // sonst:
-    hits.clear();
     uint32_t l = 0;
     uint32_t r = 0;
     uint32_t M = 0;
@@ -143,6 +144,10 @@ void find(const std::string& query, const std::vector<uint32_t>& sa, const std::
     else if (!isGreEq(sa[0], std::min(l,r), equal))
     {
         Rp = 0;
+        if (Lp == 0)
+        {
+            Lp = 1;
+        }
     }
 
     else
