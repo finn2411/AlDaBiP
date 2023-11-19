@@ -11,17 +11,16 @@
 #include <cmath>
 #include "aufgabe2.hpp"
 
-
-void construct(std::vector<uint32_t>& sa, const std::string& text)
+void construct(std::vector<uint32_t> &sa, const std::string &text)
 {
     // reset suffix array to new length
     sa.clear();
     sa.resize(text.size());
     std::iota(sa.begin(), sa.end(), 0);
-    
+
     // defining and executing sort function
-    std::sort(sa.begin(), sa.end(), [&text] (const uint32_t &a, const uint32_t &b)
-    {
+    std::sort(sa.begin(), sa.end(), [&text](const uint32_t &a, const uint32_t &b)
+              {
         uint32_t index = 0;
         while (a + index < text.size() && b + index < text.size())
         {
@@ -35,62 +34,60 @@ void construct(std::vector<uint32_t>& sa, const std::string& text)
                 break;
             }
         }
-        return a > b;
-    });
+        return a > b; });
 }
 
-
-void find(const std::string& query, const std::vector<uint32_t>& sa, const std::string& text, std::vector<uint32_t>& hits)
+void find(const std::string &query, const std::vector<uint32_t> &sa, const std::string &text, std::vector<uint32_t> &hits)
 {
     hits.clear();
 
-    // falls query leer
+    // if query or text empty
     if (query == "" || text == "")
     {
         return;
     }
 
-    // sonst:
+    // else:
     uint32_t l = 0;
     uint32_t r = 0;
     uint32_t M = 0;
-    uint32_t equal = 0; // zählt gleiche Stellen für mlr
-    std::pair<uint32_t, uint32_t> LR (0,sa.size()-1);
+    uint32_t equal = 0; // counts equal positions for mlr
+    std::pair<uint32_t, uint32_t> LR(0, sa.size() - 1);
 
     // lambda function to compare strings
-    auto isSmalEq = [query, text] (const uint32_t& saPos, const uint32_t& mlr, uint32_t& equal)
+    auto isSmalEq = [query, text](const uint32_t &saPos, const uint32_t &mlr, uint32_t &equal)
     {
         // reset equal
         equal = 0;
-        for (uint32_t counter = saPos+mlr; counter-saPos < query.size() && counter < text.size();)
+        for (uint32_t counter = saPos + mlr; counter - saPos < query.size() && counter < text.size();)
         {
-            if (query[counter-saPos] == text[counter])
+            if (query[counter - saPos] == text[counter])
             {
-                counter ++;
+                counter++;
                 equal++;
             }
             else
             {
-                return query[counter-saPos] <= text[counter];
+                return query[counter - saPos] <= text[counter];
             }
         }
         return true;
     };
 
-    auto isGreEq = [query, text] (const uint32_t& saPos, const uint32_t& mlr, uint32_t& equal)
+    auto isGreEq = [query, text](const uint32_t &saPos, const uint32_t &mlr, uint32_t &equal)
     {
         // reset equal
         equal = 0;
-        for (uint32_t counter = saPos+mlr; counter-saPos < query.size() && counter < text.size();)
+        for (uint32_t counter = saPos + mlr; counter - saPos < query.size() && counter < text.size();)
         {
-            if (query[counter-saPos] == text[counter])
+            if (query[counter - saPos] == text[counter])
             {
-                counter ++;
+                counter++;
                 equal++;
             }
             else
             {
-                return query[counter-saPos] >= text[counter];
+                return query[counter - saPos] >= text[counter];
             }
         }
         return true;
@@ -104,17 +101,17 @@ void find(const std::string& query, const std::vector<uint32_t>& sa, const std::
         Lp = 0;
     }
 
-    else if (!isSmalEq(sa[sa.size()-1], std::min(l,r), equal))
+    else if (!isSmalEq(sa[sa.size() - 1], std::min(l, r), equal))
     {
         Lp = sa.size();
     }
 
     else
     {
-        while(LR.second - LR.first > 1)
+        while (LR.second - LR.first > 1)
         {
             M = static_cast<uint32_t>(std::ceil(static_cast<double>(LR.second + LR.first) / 2));
-            if (isSmalEq(sa[M], std::min(l,r), equal))
+            if (isSmalEq(sa[M], std::min(l, r), equal))
             {
                 LR.second = M;
                 r = equal;
@@ -131,17 +128,17 @@ void find(const std::string& query, const std::vector<uint32_t>& sa, const std::
     // reset values
     l = 0;
     r = 0;
-    LR = {0,sa.size()-1};
+    LR = {0, sa.size() - 1};
 
     // calculate Rp
     uint32_t Rp = 0;
 
-    if (isGreEq(sa[sa.size()-1], 0, equal))
+    if (isGreEq(sa[sa.size() - 1], 0, equal))
     {
         Rp = sa.size() - 1;
     }
 
-    else if (!isGreEq(sa[0], std::min(l,r), equal))
+    else if (!isGreEq(sa[0], std::min(l, r), equal))
     {
         Rp = 0;
         if (Lp == 0)
@@ -152,10 +149,10 @@ void find(const std::string& query, const std::vector<uint32_t>& sa, const std::
 
     else
     {
-        while(LR.second - LR.first > 1)
+        while (LR.second - LR.first > 1)
         {
             M = static_cast<uint32_t>(std::ceil(static_cast<double>(LR.second + LR.first) / 2));
-            if (isGreEq(sa[M], std::min(l,r), equal))
+            if (isGreEq(sa[M], std::min(l, r), equal))
             {
                 LR.first = M;
                 l = equal;
@@ -169,9 +166,9 @@ void find(const std::string& query, const std::vector<uint32_t>& sa, const std::
         Rp = LR.first;
     }
 
-    if (Rp - Lp == sa.size()-1)
+    if (Rp - Lp == sa.size() - 1)
     {
-        Lp += query.size()-1;
+        Lp += query.size() - 1;
     }
 
     for (uint32_t counter = Lp; counter <= Rp; counter++)
