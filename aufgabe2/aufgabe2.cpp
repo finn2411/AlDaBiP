@@ -43,7 +43,7 @@ void construct(std::vector<uint32_t>& sa, const std::string& text)
 void find(const std::string& query, const std::vector<uint32_t>& sa, const std::string& text, std::vector<uint32_t>& hits)
 {
     // falls query leer
-    if (query == "")
+    if (query == "" || text == "")
     {
         return;
     }
@@ -164,7 +164,10 @@ void find(const std::string& query, const std::vector<uint32_t>& sa, const std::
         Rp = LR.first;
     }
 
-
+    if (Rp - Lp == sa.size()-1)
+    {
+        Lp += query.size()-1;
+    }
 
     for (uint32_t counter = Lp; counter <= Rp; counter++)
     {
@@ -172,4 +175,3 @@ void find(const std::string& query, const std::vector<uint32_t>& sa, const std::
     }
     std::sort(hits.begin(), hits.end());
 }
-
