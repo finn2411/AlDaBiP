@@ -13,8 +13,7 @@ int main(int argc, const char* argv[])
 {
     if (argc < 2)
     {
-        std::cout << "suffix array: " << argv[0] << " <TEXT>" << std::endl;
-        std::cout << "for binary search: " << argv[0] << " <TEXT> <SEARCHWORD1> <SEARCHWORD2> ..." << std::endl;
+        std::cout << "unexpected input"<< std::endl;
         return 1;
     }
 
