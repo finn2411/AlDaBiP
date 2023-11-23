@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 // additional includes can go here:
 // ...
@@ -44,5 +45,13 @@ public:
 private:
   // add your private functions and member variables here
   // ...
+
+  /// Horizontal sequence to align
+  std::string seq_h;
+  /// Vertical sequence to align
+  std::string seq_v;
+
+  /// @brief Needleman - Wunsch matrix of the two alignment sequences 
+  std::vector<std::vector<int>> matrix;
 
 };
