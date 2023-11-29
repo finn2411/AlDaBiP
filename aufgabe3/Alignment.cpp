@@ -13,6 +13,7 @@ using namespace std;
 
 Alignment::Alignment(const string &seq_v, const string &seq_h)
 {
+    
     this->seq_h = seq_h;
     this->seq_v = seq_v;
 }
