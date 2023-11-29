@@ -32,8 +32,8 @@ void Alignment::compute(const int match, const int mismatch, const int gap, cons
         matrix = vector<vector<pair<int, traceback>>>(verticalSize, vector<pair<int, traceback>>(horizontalSize, defaultValue));
 
         // calculate matrix
-        uint32_t i = 0;
-        uint32_t j = 0;
+        uint32_t i;
+        uint32_t j;
         pair<int, traceback> up;
         pair<int, traceback> left;
         pair<int, traceback> dia;
