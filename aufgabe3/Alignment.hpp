@@ -46,12 +46,18 @@ private:
   // add your private functions and member variables here
   // ...
 
-  /// Horizontal sequence to align
+  /// horizontal sequence to align
   std::string seq_h;
-  /// Vertical sequence to align
+  /// vertical sequence to align
   std::string seq_v;
 
+  /// enum with traceback directions
+  enum traceback {UP, LEFT, DIAGONAL};
+
+  /// vector containing traced back alignment from compute
+  std::vector<std::pair<int, traceback>> alignment;
+
   /// @brief Needleman - Wunsch matrix of the two alignment sequences 
-  std::vector<std::vector<int>> matrix;
+  std::vector<std::vector<std::pair<int, traceback>>> matrix;
 
 };
