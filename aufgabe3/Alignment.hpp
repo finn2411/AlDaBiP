@@ -60,4 +60,7 @@ private:
   /// @brief Needleman - Wunsch matrix of the two alignment sequences 
   std::vector<std::vector<std::pair<int, traceback>>> matrix;
 
+  /// called compute()?
+  bool computeCall = false;
+
 };
