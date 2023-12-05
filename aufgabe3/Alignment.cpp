@@ -20,6 +20,7 @@ Alignment::Alignment(const string &seq_v, const string &seq_h)
 
 void Alignment::compute(const int match, const int mismatch, const int gap, const bool local_align)
 {
+    this->computeCall = true;
     alignment.clear();
 
     if (seq_h != "" || seq_v != "")
@@ -108,7 +109,12 @@ void Alignment::compute(const int match, const int mismatch, const int gap, cons
 
 int Alignment::getScore() const
 {
-    if (alignment.empty())
+    if (!computeCall)
+    {
+        throw logic_error("Kaputt!");
+    }
+
+    else if (alignment.empty())
     {
         return 0;
     }
@@ -120,6 +126,11 @@ int Alignment::getScore() const
 
 void Alignment::getAlignment(string &a1, string &gaps, string &a2) const
 {
+    if (!computeCall)
+    {
+        throw logic_error("Kaputt!");
+    }
+
     a1.clear();
     gaps.clear();
     a2.clear();
