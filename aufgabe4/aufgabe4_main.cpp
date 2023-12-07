@@ -6,11 +6,36 @@ aufgabe4
 */
 
 #include "BLAST_Neighborhood.hpp"
+#include <omp.h>
 
 int main(int argc, const char* argv[])
 {
-    BLAST_Neighborhood test;
-    ScoreMatrix matrix;
-    matrix.load("blosum62");
-    test.generateNeighborhood("AAHILNMY", matrix, 3, 14, 1);
+    if (argc == 6)
+    {
+        BLAST_Neighborhood neighborhood;
+        ScoreMatrix matrix;
+        matrix.load(argv[2]);
+
+        double start = omp_get_wtime();
+        std::vector<NHResult> results = neighborhood.generateNeighborhood(argv[1], matrix, std::stoi(argv[3]), std::stoi(argv[4]), std::stoi(argv[5]));
+        double end = omp_get_wtime();
+
+        for (NHResult element : results)
+        {
+            std::cout << element.infix << ": ";
+            for (std::pair tuple : element.neighbors)
+            {
+                std::cout << "(" << tuple.first << ", " << tuple.second << ") ";
+            }
+            std::cout << std::endl;
+        }
+
+        std::cout << end - start << "s" << std::endl;
+    }
+
+    else
+    {
+        std::cout << "KAPUTT" << std::endl;
+    }
+    
 }

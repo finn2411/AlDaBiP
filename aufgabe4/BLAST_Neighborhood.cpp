@@ -10,7 +10,7 @@ aufgabe4
 #include <queue>
 
 
-std::vector<std::string> getPermutations(std::string str, int length) 
+std::vector<std::string> getPermutations(std::string str, size_t length) 
 {
     std::queue<std::string> q;
     std::vector<std::string> result;
@@ -46,7 +46,7 @@ std::vector<std::string> getPermutations(std::string str, int length)
     }
 
 
-    // example: string: abcd length: 3
+    // example: string: abcd; length: 3
     //          1. q =  a, b, c, d 
     //          2. q = aa, ab, ac, ad, ba, bb, bc, bd
     //          3. ...
@@ -63,14 +63,20 @@ std::vector<NHResult> BLAST_Neighborhood::generateNeighborhood(const std::string
     // create and set up results vector
     std::vector<NHResult> results{};
 
-
+    // aminoacid alphabet
     std::string alphabet = "ARNDCQEGHILKMFPSTWYV";
+
+    // calculate all posible word_size permutations of the alphabet using getPermutations
     std::vector<std::string> permutations = getPermutations(alphabet, word_size);
+
+    // fill up results vector
     for (size_t i = 0; i <= query.size() - word_size; i++)
     {
+        // add new infix 
         results.emplace_back();
         results[i].infix = query.substr(i, word_size);
 
+        // calculate neighborhood of current infix
         int currentScore;
         for(std::string word : permutations)
         {
@@ -87,21 +93,5 @@ std::vector<NHResult> BLAST_Neighborhood::generateNeighborhood(const std::string
         }
     }
 
-
-
-    // tests
-
-    for (NHResult element : results)
-    {
-        std::cout << element.infix << std::endl;
-        for (std::pair tuple : element.neighbors)
-        {
-            std::cout << "(" << tuple.first << ", " << tuple.second << ") ";
-        }
-        std::cout << std::endl;
-    }
-
     return results;
 }
-
-
