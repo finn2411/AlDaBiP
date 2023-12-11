@@ -8,6 +8,8 @@ aufgabe4
 #include "BLAST_Neighborhood.hpp"
 #include <iostream>
 #include <queue>
+#include <omp.h>
+#include <stdexcept>
 
 
 std::vector<std::string> getPermutations(std::string str, size_t length) 
@@ -60,20 +62,38 @@ std::vector<NHResult> BLAST_Neighborhood::generateNeighborhood(const std::string
                                                                const int score_threshold,
                                                                const int threads)
 {
+    // make sure that threads is positive
+    if (threads < 1) throw std::logic_error("Invalid number of threads!");
+
+    // set number of threads to operate on
+    omp_set_num_threads(threads);
+
     // create and set up results vector
     std::vector<NHResult> results{};
 
+    int qSize = query.size();
+
+    // return empty vector if word size is greater than query size
+    if (qSize < word_size)
+    {
+        return results;
+    }
+
+    // resize results vector
+    results.resize(query.size() - word_size + 1);
+
+
     // aminoacid alphabet
-    std::string alphabet = "ARNDCQEGHILKMFPSTWYV";
+    std::string alphabet = "ACDEFGHIKLMNPQRSTVWY";
 
     // calculate all posible word_size permutations of the alphabet using getPermutations
     std::vector<std::string> permutations = getPermutations(alphabet, word_size);
 
     // fill up results vector
+    #pragma omp parallel for 
     for (size_t i = 0; i <= query.size() - word_size; i++)
     {
         // add new infix 
-        results.emplace_back();
         results[i].infix = query.substr(i, word_size);
 
         // calculate neighborhood of current infix

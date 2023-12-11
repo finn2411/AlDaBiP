@@ -35,7 +35,7 @@ int main(int argc, const char* argv[])
 
     else
     {
-        std::cout << "KAPUTT" << std::endl;
+        throw std::logic_error("Input: ./aufgabe4_main sequence score_matrix word_size threshold threads");
     }
     
 }
