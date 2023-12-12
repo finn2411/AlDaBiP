@@ -6,10 +6,8 @@ aufgabe4
 */
 
 #include "BLAST_Neighborhood.hpp"
-#include <iostream>
 #include <queue>
 #include <omp.h>
-#include <stdexcept>
 
 std::vector<std::string> getPermutations(std::string str, size_t length)
 {

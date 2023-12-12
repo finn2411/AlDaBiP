@@ -9,8 +9,6 @@
 
 // ... more includes here...
 
-#include <cstdint>
-#include <exception>
 
 /**
    Neighborhood Result data for a single infix
