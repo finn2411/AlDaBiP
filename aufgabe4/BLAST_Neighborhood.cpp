@@ -67,7 +67,7 @@ std::vector<NHResult> BLAST_Neighborhood::generateNeighborhood(const std::string
     // create and set up results vector
     std::vector<NHResult> results{};
 
-    // to prevent warning int compared with uint
+    // to prevent warning: int compared with uint
     int qSize = query.size();
 
     // return empty vector if word size is greater than query size
@@ -92,7 +92,8 @@ std::vector<NHResult> BLAST_Neighborhood::generateNeighborhood(const std::string
         // add new infix
         results[i].infix = query.substr(i, word_size);
 
-        // calculate neighborhood of current infix
+        // calculate neighborhood of current infix 
+        // has to be defined here -> race condition!!!
         int currentScore;
         for (std::string word : permutations)
         {
