@@ -2,8 +2,9 @@
 
 #include <vector>
 #include <string>
+#include <stdexcept>
+#include <cmath>
 // your includes here ... (should not be needed though)
-
 
 /**
    The Q-Gram-Index implementation using Counting Sort for SA Construction
@@ -85,6 +86,8 @@ public:
 private:
    // YOUR PRIVATE MEMBER FUNCTIONS and VARIABLES HERE
 
-
+  const std::string text;
+  uint8_t q;
+  const std::string alphabet{"ACGT"};
+  uint32_t bitmask;
 };
-
