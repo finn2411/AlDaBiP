@@ -86,8 +86,10 @@ public:
 private:
    // YOUR PRIVATE MEMBER FUNCTIONS and VARIABLES HERE
 
-  const std::string text;
-  uint8_t q;
+  const std::string text{};
+  uint8_t q{};
+  std::vector<uint32_t> dir{};
+  std::vector<uint32_t> suftab{};
   const std::string alphabet{"ACGT"};
   uint32_t bitmask;
 };

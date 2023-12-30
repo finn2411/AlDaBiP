@@ -19,6 +19,7 @@ int main(int argc, const char* argv[])
 //
     //std::string query = argv[2];
     QGramIndex qind = QGramIndex("ACCGTCGTC", 2);
+    qind.getHits(11);
 
     //file.close();
 }

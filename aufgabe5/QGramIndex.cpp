@@ -18,13 +18,12 @@ QGramIndex::QGramIndex(const std::string& text, const uint8_t q)
     bitmask = ~0 << 2*q; // q=2: ....110000 => ~bitmask: ...001111
 
     // create dir
-    std::vector<uint32_t> dir(std::pow(alphabet.size(), q), 0);
+    dir.resize(std::pow(alphabet.size(), q), 0);
 
-    // first hash value
+    // counting qgram occurances
     uint32_t currentHash = hash(text.substr(0, q));
     dir[currentHash]++;
 
-    // other hash values with rolling hash
     uint32_t temp;
     for (uint32_t position = q; position < text.size(); position++)
     {
@@ -33,7 +32,35 @@ QGramIndex::QGramIndex(const std::string& text, const uint8_t q)
         dir[currentHash]++;
     }
 
+    for (uint32_t index = 1; index < dir.size(); index++)
+    {
+        dir[index] += dir[index-1];
+    }
+
+    // create suftab
+    suftab.resize(text.size() - q + 1);
+
+    currentHash = hash(text.substr(0, q));
+    dir[currentHash]--;
+    suftab[dir[currentHash]] = 0;
+
+    for (uint32_t position = q; position < text.size(); position++)
+    {
+        temp = currentHash;
+        currentHash = hashNext(temp, text[position]);
+        dir[currentHash]--;
+        suftab[dir[currentHash]] = position - 1;
+    }
+
+
     for (uint32_t element : dir)
+    {
+        std::cout << element << "\n";
+    }
+
+    std::cout << "\n";
+
+    for (uint32_t element : suftab)
     {
         std::cout << element << "\n";
     }
@@ -42,7 +69,37 @@ QGramIndex::QGramIndex(const std::string& text, const uint8_t q)
 
 std::vector<uint32_t> QGramIndex::getHits(const uint32_t h) const
 {
+    std::vector<uint32_t> results{};
+    uint32_t temp;
 
+    if(h == dir.size() - 1)
+    {
+        if (dir[h] != text.size() - q + 1)
+        {
+            for(temp = dir[h]; temp < text.size() - q + 1; temp++)
+            {
+                if (temp != text.size() - q + 1) results.push_back(suftab[temp]);
+                else break;
+            }
+        }
+    }
+
+    else if(dir[h] != dir[h+1])
+    {
+        for(temp = dir[h]; temp < text.size() - q + 1; temp++)
+        {
+            if (temp < dir[h+1]) results.push_back(suftab[temp]);
+            else  break;
+        }
+    }
+
+    std::cout << "\n";
+    for (uint32_t element : results)
+    {
+        std::cout << element << "\n";
+    }
+
+    return results;
 }
 
 
