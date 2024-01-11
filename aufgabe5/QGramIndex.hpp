@@ -86,7 +86,7 @@ public:
 private:
    // YOUR PRIVATE MEMBER FUNCTIONS and VARIABLES HERE
 
-  const std::string text{};
+  const std::string& text{};
   uint8_t q{};
   std::vector<uint32_t> dir{};
   std::vector<uint32_t> suftab{};

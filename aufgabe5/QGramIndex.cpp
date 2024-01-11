@@ -7,6 +7,7 @@ aufgabe5
 
 #include "QGramIndex.hpp"
 #include <iostream>
+#include <omp.h>
 
 QGramIndex::QGramIndex(const std::string& text, const uint8_t q)
 : text(text), q(q) // fill up member
@@ -49,26 +50,15 @@ QGramIndex::QGramIndex(const std::string& text, const uint8_t q)
         temp = currentHash;
         currentHash = hashNext(temp, text[position]);
         dir[currentHash]--;
-        suftab[dir[currentHash]] = position - 1;
-    }
-
-
-    for (uint32_t element : dir)
-    {
-        std::cout << element << "\n";
-    }
-
-    std::cout << "\n";
-
-    for (uint32_t element : suftab)
-    {
-        std::cout << element << "\n";
+        suftab[dir[currentHash]] = position - (q - 1);
     }
 }
 
 
 std::vector<uint32_t> QGramIndex::getHits(const uint32_t h) const
 {
+    if (h >= std::pow(4, q)) throw std::invalid_argument("Invalid hash value!");
+
     std::vector<uint32_t> results{};
     uint32_t temp;
 
@@ -91,12 +81,6 @@ std::vector<uint32_t> QGramIndex::getHits(const uint32_t h) const
             if (temp < dir[h+1]) results.push_back(suftab[temp]);
             else  break;
         }
-    }
-
-    std::cout << "\n";
-    for (uint32_t element : results)
-    {
-        std::cout << element << "\n";
     }
 
     return results;
