@@ -45,4 +45,4 @@ int main(int argc, const char* argv[])
     {
         throw std::logic_error("Usage: ./aufgabe5 <GENOME_FILE> <QUERY>");    
     }
-    }
+}
