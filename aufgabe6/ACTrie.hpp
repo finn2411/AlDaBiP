@@ -78,9 +78,20 @@ public:
 private:
   // add your private functions and member variables here
   // ....
-  
+
+  struct ACNode
+  {
+    char character = '0';
+    uint32_t suffix_link;
+    uint32_t output_link;
+    uint32_t parent_link;
+    std::vector<uint32_t> children{};
+    std::vector<uint32_t> needle_indices{};
+    uint32_t depth{0};
+    Index index;
+  };
+
+  std::vector<ACNode> Trie{};
+
   
 };
-
-
-
