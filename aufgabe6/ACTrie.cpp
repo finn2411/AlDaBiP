@@ -11,23 +11,47 @@ aufgabe 6: Aho-Corasick
 
 ACTrie::ACTrie(const std::vector<std::string>& needles)
 {
+    // create root node
     ACNode root;
     root.index = 0;
     root.children = {};
     Trie.push_back(root);
-    //Trie.
 
-    for(std::string currentNeedle : needles)//Going through
+    // create variables for later
+    bool isChild = false;
+    uint32_t tempDepth{};
+    uint32_t charPos{};
+
+    // step through needles
+    for(std::string currentNeedle : needles) 
     {
-        uint32_t tempDepth = 0;
-        std::cout << "loop 1" << "\n";
-        uint32_t charPos = 0; // currentNeedle[charPos]
+        // reset tempDepth and charPos for every needle 
+        tempDepth = 0;
+        charPos = 0;
+
+        // step through tree to create new nodes (starting from root -> index 0)
         for(uint32_t currentNode = 0; currentNode < Trie.size();)
         {
-            // Problem: Wir vergleichen hier den aktuellen Character mit den Zahlen aus dem Children Vektor!!
-            if ((std::find(Trie[currentNode].children.begin(), Trie[currentNode].children.end(), currentNeedle[charPos])) == Trie[currentNode].children.end())
+            // reset isChild for every node looked at
+            isChild = false;
+
+            // go through children of current node to see if current char is one of them
+            for (uint32_t element : Trie[currentNode].children)
             {
-                std::cout << "if" << "\n";
+                // if current char is one of the children go to its node and look at next char in needle
+                if (Trie[element].character == currentNeedle[charPos])
+                {
+                    isChild = true;
+                    currentNode = element;
+                    charPos++;
+                    tempDepth++;
+                    break;
+                }
+            }
+
+            // if current char is no child of current node create new node
+            if (isChild == false)
+            {
                 ACNode newNode;
                 newNode.index = Trie.size();
                 newNode.depth = tempDepth + 1;
@@ -38,25 +62,29 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
                 charPos++;
                 tempDepth++;
             }
-            //break
-            else
-            {
-                //charPos++;
-                //tempDepth++;
-                break;    
-            }
 
-            if (charPos == currentNeedle.size())
-            {
-                break;
-            }
+            // move to next needle if viewed at all chars
+            if (charPos == currentNeedle.size()) break;
         }
     }
 
     for (int i = 0; i < Trie.size(); i++)
     {
-        std::cout << Trie[i].character << "\n";
-        std::cout << Trie[i].index.pos() <<"\n";
+        std::cout << Trie[i].character << " ";
+    }
+
+    std::cout << "\n";
+
+    for (int i = 0; i < Trie.size(); i++)
+    {
+        std::cout << Trie[i].index.pos() <<" ";
+    }
+
+        std::cout << "\n";
+
+    for (int i = 0; i < Trie.size(); i++)
+    {
+        std::cout << Trie[i].depth <<" ";
     }
     
 }
@@ -78,7 +106,7 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
 //}
 
 int main( ){
-    std::vector<std::string> trie={"a","ab"};
+    std::vector<std::string> trie={"a","ab","bab","bc","bca","c","caa"};
     ACTrie test(trie);
     
 }
