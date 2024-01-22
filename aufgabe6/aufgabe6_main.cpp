@@ -1,11 +1,12 @@
 #include "ACTrie.hpp"
 #include <iostream>
 #include <stdexcept>
+#include <omp.h>
 
 int main(int argc, const char *argv[])
 {
-    std::vector<std::string> teset {"al"};
-    ACTrie test(teset);
+    std::vector<std::string> needles = {"a","ab","bab","bc","bca","c","caa","a"};
+    ACTrie test(needles);
 
     //if(argc>2)
     //{

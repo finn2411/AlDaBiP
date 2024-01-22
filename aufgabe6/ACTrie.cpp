@@ -7,6 +7,7 @@ aufgabe 6: Aho-Corasick
 #include "ACTrie.hpp"
 #include <stdexcept>
 #include <iostream>
+#include <queue>
 
 ACTrie::ACTrie(const std::vector<std::string>& needles)
 {
@@ -20,6 +21,10 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
     bool isChild = false;
     uint32_t tempDepth{};
     uint32_t charPos{};
+    uint32_t maxDepth = 0;  // for suffix links
+
+    // ------------------- BUILD TRIE --------------------------------------------------------------------------------------
+
 
     // step through needles (keep track of needle indeces!)
     uint32_t needleIndex = 0;
@@ -52,6 +57,7 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
                     
                     charPos++;
                     tempDepth++;
+                    if(maxDepth < tempDepth) { maxDepth = tempDepth; }
                     break;
                 }
             }
@@ -63,6 +69,7 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
                 newNode.index = Trie.size();
                 newNode.depth = tempDepth + 1;
                 newNode.character = currentNeedle[charPos];
+                newNode.parent_link = currentNode;
 
                 // if current char is last char of needle add needle index/indeces
                 if (charPos == currentNeedle.size() - 1)
@@ -74,12 +81,14 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
                 Trie.emplace_back(newNode);
                 Trie[currentNode].children.emplace_back(newNode.index.pos());
 
+                // set new node to current node
                 currentNode = newNode.index.pos();
 
 
                 // look at next char in needle
                 charPos++;
                 tempDepth++;
+                if(maxDepth < tempDepth) { maxDepth = tempDepth; }
             }
 
             // move to next needle if viewed at all chars
@@ -89,6 +98,82 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
         // don't forget!!
         needleIndex++;
     }
+
+    // ------------------- ADD SUFFIX-LINKS --------------------------------------------------------------------------------------
+
+    
+    // create queue (recycle tempDepth and use maxDepth)
+    std::queue<ACNode> queue{};
+
+    for(tempDepth = 1; tempDepth <= maxDepth; tempDepth++)
+    {
+        for (ACNode element : Trie)
+        {
+            if (tempDepth == element.depth)
+            {
+                queue.push(element);
+            }
+        }
+    }
+
+    while (queue.empty() == false)
+    {
+        // nodes on level 1 always have root as suffix link
+        if(queue.front().depth == 1)
+        {
+            Trie[queue.front().index.pos()].suffix_link = 0;
+        }
+
+        //else
+        //{
+        //    // look at children of parents suffix link
+        //    for(uint32_t nodeIndex : Trie[Trie[queue.front().parent_link].suffix_link].children)
+        //    {
+        //        if (Trie[nodeIndex].character == queue.front().character)
+        //        {
+        //            Trie[queue.front().index.pos()].suffix_link = nodeIndex;
+        //        }
+        //    }
+        //}
+
+        // if no child is suffix follow other suffix links
+        else
+        {
+            ACNode currentNode = Trie[Trie[queue.front().parent_link].suffix_link];
+            do
+            {
+                for(uint32_t nodeIndex : currentNode.children)
+                {
+                    if (Trie[nodeIndex].character == queue.front().character)
+                    {
+                        Trie[queue.front().index.pos()].suffix_link = nodeIndex;
+                    }
+                }
+
+                currentNode = Trie[currentNode.suffix_link];
+            } while ((currentNode.index.pos() != 0) || (queue.front().suffix_link != 0));
+
+            // last round with roots children
+            if (Trie[queue.front().index.pos()].suffix_link == 0 && queue.front().depth != 1)
+            {
+                for(uint32_t nodeIndex : currentNode.children)
+                {
+                    if (Trie[nodeIndex].character == queue.front().character)
+                    {
+                        Trie[queue.front().index.pos()].suffix_link = nodeIndex;
+                    }
+                }
+            }
+
+            
+        }
+
+        queue.pop();
+    }
+
+
+
+
 
     for (int i = 0; i < Trie.size(); i++)
     {
@@ -126,6 +211,12 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
         std::cout << " ";
     }
     
+    std::cout << "\n";
+
+    for (int i = 0; i < Trie.size(); i++)
+    {
+        std::cout << Trie[i].suffix_link <<" ";
+    }
 }
 
 
