@@ -5,7 +5,7 @@
 
 int main(int argc, const char *argv[])
 {
-    std::vector<std::string> needles = {"a","ab","bab","bc","bca","c","caa","a"};
+    std::vector<std::string> needles = {"A","AB","BAB","BC","BCA","C","CAA","A"};
     ACTrie test(needles);
 
     //if(argc>2)

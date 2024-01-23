@@ -11,6 +11,8 @@ aufgabe 6: Aho-Corasick
 
 ACTrie::ACTrie(const std::vector<std::string>& needles)
 {
+    if(needles.empty() == true) throw std::logic_error("Input vector is empty!");
+
     // create root node
     ACNode root;
     root.index = 0;
@@ -37,6 +39,8 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
         // step through tree to create new nodes (starting from root -> index 0)
         for(uint32_t currentNode = 0; currentNode < Trie.size();)
         {
+            if(currentNeedle[charPos] < 41 || currentNeedle[charPos] > 90) throw std::logic_error("Character out of ranfe 'A' - 'Z'!");
+
             // reset isChild for every node looked at
             isChild = false;
 
