@@ -116,6 +116,9 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
         }
     }
 
+    // copy queue for output links
+    std::queue<ACNode> outputQueue = queue;
+
     while (queue.empty() == false)
     {
         // nodes on level 1 always have root as suffix link
@@ -124,19 +127,6 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
             Trie[queue.front().index.pos()].suffix_link = 0;
         }
 
-        //else
-        //{
-        //    // look at children of parents suffix link
-        //    for(uint32_t nodeIndex : Trie[Trie[queue.front().parent_link].suffix_link].children)
-        //    {
-        //        if (Trie[nodeIndex].character == queue.front().character)
-        //        {
-        //            Trie[queue.front().index.pos()].suffix_link = nodeIndex;
-        //        }
-        //    }
-        //}
-
-        // if no child is suffix follow other suffix links
         else
         {
             ACNode currentNode = Trie[Trie[queue.front().parent_link].suffix_link];
@@ -172,8 +162,34 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
     }
 
 
+    // ------------------- ADD OUTPUT-LINKS --------------------------------------------------------------------------------------
 
 
+    bool done = false;
+
+    // step through queue
+    while (outputQueue.empty() == false)
+    {
+        // skip nodes with depth 1 and 0 (no output links)
+        if (outputQueue.front().depth > 1)
+        {
+            // set currentNode to suffix linked node of first element in queue
+            ACNode currentNode = Trie[Trie[outputQueue.front().index.pos()].suffix_link];
+
+            // follow the suffix links until at root or until output link is found
+            while(currentNode.index.pos() != 0)
+            {
+                // to check if end node see if needle_indeces is empty
+                if(currentNode.needle_indices.empty() == false)
+                {
+                    Trie[outputQueue.front().index.pos()].output_link = currentNode.index.pos();
+                    break;
+                }
+                currentNode = Trie[currentNode.suffix_link];
+            }
+        }
+        outputQueue.pop();
+    }
 
     for (int i = 0; i < Trie.size(); i++)
     {
@@ -217,27 +233,11 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
     {
         std::cout << Trie[i].suffix_link <<" ";
     }
+
+        std::cout << "\n";
+
+    for (int i = 0; i < Trie.size(); i++)
+    {
+        std::cout << Trie[i].output_link <<" ";
+    }
 }
-
-
-//void ACTrie::setQuery(const std::string& haystack)
-//{
-//
-//}
-//
-//bool ACTrie::next(std::vector<Hit>& hits)
-//{
-//
-//}
-//
-//std::string ACTrie::getTree() const
-//{
-//
-//}
-
-//int main( )
-//{
-//    std::vector<std::string> trie={"a","ab","bab","bc","bca","c","caa"};
-//    ACTrie test(trie);
-//    
-//}
