@@ -93,5 +93,10 @@ private:
 
   std::vector<ACNode> Trie{};
 
+  ACNode curTrieNode{};
+  uint32_t curHayPos{};
+
+  std::string query;
+  const std::vector<std::string> needles;
   
 };

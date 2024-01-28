@@ -9,7 +9,7 @@ aufgabe 6: Aho-Corasick
 #include <iostream>
 #include <queue>
 
-ACTrie::ACTrie(const std::vector<std::string>& needles)
+ACTrie::ACTrie(const std::vector<std::string>& needles) : needles(needles)
 {
     if(needles.empty() == true) throw std::logic_error("Input vector is empty!");
 
@@ -169,7 +169,6 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
     // ------------------- ADD OUTPUT-LINKS --------------------------------------------------------------------------------------
 
 
-    bool done = false;
 
     // step through queue
     while (outputQueue.empty() == false)
@@ -194,54 +193,51 @@ ACTrie::ACTrie(const std::vector<std::string>& needles)
         }
         outputQueue.pop();
     }
+}
 
-    for (int i = 0; i < Trie.size(); i++)
+
+void ACTrie::setQuery(const std::string& haystack)
+{
+    // set query and reset current node
+    query = haystack;
+    curTrieNode = Trie[0];
+    curHayPos = 0;
+}
+
+
+bool ACTrie::next(std::vector<Hit>& hits)
+{
+    bool isChild = false;
+
+    while (isChild == false && curHayPos < query.size())
     {
-        std::cout << Trie[i].character << " ";
-    }
-
-    std::cout << "\n";
-
-    for (int i = 0; i < Trie.size(); i++)
-    {
-        std::cout << Trie[i].index.pos() <<" ";
-    }
-
-    std::cout << "\n";
-
-    for (int i = 0; i < Trie.size(); i++)
-    {
-        std::cout << Trie[i].depth <<" ";
-    }
-
-    std::cout << "\n";
-
-    for (int i = 0; i < Trie.size(); i++)
-    {
-        for (int j = 0; j < Trie[i].needle_indices.size(); j++)
+        for(uint32_t child : curTrieNode.children)
         {
-            std::cout << Trie[i].needle_indices[j]<< ",";
+            if(Trie[child].character == query[curHayPos])
+            {
+                isChild = true;
+                curTrieNode = Trie[child];
+            }
         }
 
-        if (Trie[i].needle_indices.empty())
+        // if on current position is no hit
+        if(isChild == false)
         {
-            std::cout << 'X';
+            curHayPos++;
         }
-
-        std::cout << " ";
     }
-    
-    std::cout << "\n";
 
-    for (int i = 0; i < Trie.size(); i++)
+
+
+    while(curTrieNode.needle_indices.empty() == true && curTrieNode.children.empty() == false)
     {
-        std::cout << Trie[i].suffix_link <<" ";
+        
     }
 
-        std::cout << "\n";
+}
 
-    for (int i = 0; i < Trie.size(); i++)
-    {
-        std::cout << Trie[i].output_link <<" ";
-    }
+
+std::string ACTrie::getTree() const
+{
+
 }
