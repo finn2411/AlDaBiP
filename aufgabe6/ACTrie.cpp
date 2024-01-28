@@ -217,6 +217,31 @@ bool ACTrie::next(std::vector<Hit>& hits)
             {
                 isChild = true;
                 curTrieNode = Trie[child];
+
+                uint32_t nextChar = 0;
+
+                while(curTrieNode.needle_indices.empty() == true && curTrieNode.children.empty() == false && curHayPos+nextChar < query.size())
+                {
+                    for(uint32_t child : curTrieNode.children)
+                    {
+                        if(Trie[child].character == query[curHayPos+nextChar])
+                        {
+                            curTrieNode = Trie[child];
+                            nextChar++;
+                        }
+
+                        else
+                        {
+                            isChild = false;
+                        }
+                    }
+
+                    if(isChild == false)
+                    {
+                        break;
+                    }
+                }
+
             }
         }
 
@@ -227,13 +252,21 @@ bool ACTrie::next(std::vector<Hit>& hits)
         }
     }
 
+    if (curTrieNode.needle_indices.empty() == true) return false;
 
-
-    while(curTrieNode.needle_indices.empty() == true && curTrieNode.children.empty() == false)
+    // direct hits
+    for(uint32_t element : curTrieNode.needle_indices)
     {
-        
+        hits.emplace_back(Hit(element, curHayPos));
     }
 
+    // hits via output link
+    for(uint32_t element : Trie[curTrieNode.output_link].needle_indices)
+    {
+        hits.emplace_back(Hit(element, curHayPos + Trie[curTrieNode.output_link].depth));
+    }
+
+    return true;
 }
 
 
