@@ -8,6 +8,7 @@ aufgabe 6: Aho-Corasick
 #include <stdexcept>
 #include <iostream>
 #include <queue>
+#include <algorithm>
 
 ACTrie::ACTrie(const std::vector<std::string>& needles) : needles(needles)
 {
@@ -202,75 +203,113 @@ void ACTrie::setQuery(const std::string& haystack)
     query = haystack;
     curTrieNode = Trie[0];
     curHayPos = 0;
+    tempPos = 0;
 }
 
 
 bool ACTrie::next(std::vector<Hit>& hits)
 {
+    hits.clear();
+
+    bool hit = false;
     bool isChild = false;
 
-    while (isChild == false && curHayPos < query.size())
+    while (hit == false)
     {
+        if(tempPos>=query.length()) return false;
+        if(curTrieNode.children.empty()) 
+        {
+            curTrieNode = Trie[0];
+            curHayPos=tempPos;
+            //curHayPos++;
+            //tempPos=curHayPos;
+        }
+
+        //std::cout << "curHayPos: " << curHayPos << "; tempPos:  " << tempPos << "\n"; 
+        //std::cout << "Vergleich: " << curTrieNode.character<<".children"  << " - " << query[tempPos] << tempPos << "\n";
         for(uint32_t child : curTrieNode.children)
         {
-            if(Trie[child].character == query[curHayPos])
+            if(query[tempPos]==Trie[child].character)
             {
                 isChild = true;
-                curTrieNode = Trie[child];
 
-                uint32_t nextChar = 0;
-
-                while(curTrieNode.needle_indices.empty() == true && curTrieNode.children.empty() == false && curHayPos+nextChar < query.size())
+                if(!Trie[child].needle_indices.empty())
                 {
-                    for(uint32_t child : curTrieNode.children)
+                    //std::cout << "Hit!\n";
+                    hit = true;
+                    for(uint32_t index : Trie[child].needle_indices)
                     {
-                        if(Trie[child].character == query[curHayPos+nextChar])
-                        {
-                            curTrieNode = Trie[child];
-                            nextChar++;
-                        }
-
-                        else
-                        {
-                            isChild = false;
-                        }
+                        hits.emplace_back(Hit(index, curHayPos)); 
+                        //std::cout << "curHayPos: "<<curHayPos<<"\n";
                     }
 
-                    if(isChild == false)
+                    for(uint32_t index : Trie[Trie[child].output_link].needle_indices)
                     {
-                        break;
+                        hits.emplace_back(Hit(index, tempPos));
+                        //std::cout << "tempPos: "<<tempPos<<"\n";
                     }
+
+                    tempPos++;
+                    curTrieNode=Trie[child];
+                    return true;
                 }
+                
+                else
+                {
+                    for(uint32_t index : Trie[Trie[child].output_link].needle_indices)
+                    {
+                        hits.emplace_back(Hit(index, tempPos));
+                        //std::cout << "tempPos: "<<tempPos<<"\n";
+                    }
 
+                    tempPos++;
+                    curTrieNode=Trie[child];
+                    break;
+                }
             }
         }
 
-        // if on current position is no hit
-        if(isChild == false)
+        if(!isChild)
         {
             curHayPos++;
+            tempPos++;
         }
+        isChild=false;
+       
     }
-
-    if (curTrieNode.needle_indices.empty() == true) return false;
-
-    // direct hits
-    for(uint32_t element : curTrieNode.needle_indices)
-    {
-        hits.emplace_back(Hit(element, curHayPos));
-    }
-
-    // hits via output link
-    for(uint32_t element : Trie[curTrieNode.output_link].needle_indices)
-    {
-        hits.emplace_back(Hit(element, curHayPos + Trie[curTrieNode.output_link].depth));
-    }
-
-    return true;
+    
 }
 
 
-std::string ACTrie::getTree() const
+std::string ACTrie::getTree() const 
 {
+    // Start DFS from the root node
+    return getSubtree(0);
+}
 
+std::string ACTrie::getSubtree(uint32_t nodeIndex) const
+{
+    const ACNode& node = Trie[nodeIndex];
+
+    std::string result;
+    result += node.character;
+
+    // Sort children nodes in alphabetical order
+    std::vector<uint32_t> sortedChildren = node.children;
+    std::sort(sortedChildren.begin(), sortedChildren.end(), [this](uint32_t a, uint32_t b)
+        {
+            return Trie[a].character < Trie[b].character;
+        });
+
+    // Append string representation of each child subtree
+    for (uint32_t childIndex : sortedChildren)
+    {
+        if (Trie[childIndex].depth > node.depth)
+        // Only consider edges which increase in depth
+        {
+            result += "(" + getSubtree(childIndex) + ")";
+        }
+    }
+
+    return result;
 }

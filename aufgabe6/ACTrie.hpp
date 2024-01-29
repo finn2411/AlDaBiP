@@ -79,22 +79,25 @@ private:
   // add your private functions and member variables here
   // ....
 
+  std::string getSubtree(uint32_t nodeIndex) const;
+
   struct ACNode
   {
     char character = '0';
     uint32_t suffix_link;
     uint32_t output_link;
     uint32_t parent_link;
+    Index index;
+    uint32_t depth{0};
     std::vector<uint32_t> children{};
     std::vector<uint32_t> needle_indices{};
-    uint32_t depth{0};
-    Index index;
   };
 
   std::vector<ACNode> Trie{};
 
   ACNode curTrieNode{};
   uint32_t curHayPos{};
+  uint32_t tempPos{};
 
   std::string query;
   const std::vector<std::string> needles;
