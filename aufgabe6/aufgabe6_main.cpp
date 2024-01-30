@@ -6,9 +6,12 @@
 int main(int argc, const char *argv[])
 {
     //std::vector<std::string> needles = {"A", "AB", "BAB", "BC", "BCA", "C", "CAA"};
-    std::vector<std::string> needles = {"A","B","C","D","E", "AB", "ABC", "ABE", "BABC"};
+    std::vector<std::string> needles = { "AT", "TA", "A", "BTB", "C", "BTBB" };
+    const size_t len {10000000};
+    std::string garbage(len, 'Z');
+    std::string q = garbage + "BTB" + garbage + "BTB";
     ACTrie test(needles);
-    test.setQuery("BABCZBABC");
+    test.setQuery(q);
     //test.setQuery("NBCA");
 
     std::vector<Hit> hits{};
