@@ -326,8 +326,14 @@ std::string ACTrie::getSubtree(uint32_t nodeIndex) const
 
     // Sort children nodes in alphabetical order
     std::vector<uint32_t> sortedChildren = node.children;
-    std::sort(sortedChildren.begin(), sortedChildren.end(), [this](uint32_t a, uint32_t b)
-              { return Trie[a].character < Trie[b].character; });
+    std::sort(sortedChildren.begin(), sortedChildren.end(), [this](uint32_t a, uint32_t b) {
+        if (a < Trie.size() && b < Trie.size()) {
+            return Trie[a].character < Trie[b].character;
+        } else {
+            // Handle the case where a or b is out of bounds...
+            return false;
+        }
+    });
 
     // Append string representation of each child subtree
     for (uint32_t childIndex : sortedChildren)
