@@ -9,6 +9,7 @@ aufgabe 6: Aho-Corasick
 #include <iostream>
 #include <queue>
 #include <algorithm>
+#include <cstdint>
 
 ACTrie::ACTrie(const std::vector<std::string>& needles) : needles(needles)
 {
@@ -264,6 +265,10 @@ bool ACTrie::next(std::vector<Hit>& hits)
 
                     tempPos++;
                     curTrieNode=Trie[child];
+                    if(curTrieNode.output_link!=0)
+                    {
+                        return true;
+                    }
                     break;
                 }
             }
@@ -273,6 +278,10 @@ bool ACTrie::next(std::vector<Hit>& hits)
         {
             curHayPos++;
             tempPos++;
+            if(!curTrieNode.index.pos()==0)
+            {
+                curTrieNode=Trie[curTrieNode.suffix_link];
+            }
         }
         isChild=false;
        

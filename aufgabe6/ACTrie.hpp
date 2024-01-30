@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <limits>
-
+#include <cstdint>
 /// A needle (at position #i, as passed into ACTrie's constructor) was found in the haystack (query) at position 'p'
 /// (all values are 0-based)
 /// Do NOT change this structure!
