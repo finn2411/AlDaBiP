@@ -2,7 +2,7 @@
 Maxim Daniel
 Finn Thierolf
 aufgabe 6: Aho-Corasick
-*/ 
+*/
 
 #include "ACTrie.hpp"
 #include <stdexcept>
@@ -11,9 +11,10 @@ aufgabe 6: Aho-Corasick
 #include <algorithm>
 #include <cstdint>
 
-ACTrie::ACTrie(const std::vector<std::string>& needles) : needles(needles)
+ACTrie::ACTrie(const std::vector<std::string> &needles) : needles(needles)
 {
-    if(needles.empty() == true) throw std::logic_error("Input vector is empty!");
+    if (needles.empty() == true)
+        throw std::logic_error("Input vector is empty!");
 
     // create root node
     ACNode root;
@@ -25,23 +26,23 @@ ACTrie::ACTrie(const std::vector<std::string>& needles) : needles(needles)
     bool isChild = false;
     uint32_t tempDepth{};
     uint32_t charPos{};
-    uint32_t maxDepth = 0;  // for suffix links
+    uint32_t maxDepth = 0; // for suffix links
 
     // ------------------- BUILD TRIE --------------------------------------------------------------------------------------
 
-
     // step through needles (keep track of needle indeces!)
     uint32_t needleIndex = 0;
-    for(std::string currentNeedle : needles) 
+    for (std::string currentNeedle : needles)
     {
-        // reset tempDepth and charPos for every needle 
+        // reset tempDepth and charPos for every needle
         tempDepth = 0;
         charPos = 0;
 
         // step through tree to create new nodes (starting from root -> index 0)
-        for(uint32_t currentNode = 0; currentNode < Trie.size();)
+        for (uint32_t currentNode = 0; currentNode < Trie.size();)
         {
-            if(currentNeedle[charPos] < 41 || currentNeedle[charPos] > 90) throw std::logic_error("Character out of ranfe 'A' - 'Z'!");
+            if (currentNeedle[charPos] < 41 || currentNeedle[charPos] > 90)
+                throw std::logic_error("Character out of ranfe 'A' - 'Z'!");
 
             // reset isChild for every node looked at
             isChild = false;
@@ -60,10 +61,13 @@ ACTrie::ACTrie(const std::vector<std::string>& needles) : needles(needles)
                     {
                         Trie[currentNode].needle_indices.emplace_back(needleIndex);
                     }
-                    
+
                     charPos++;
                     tempDepth++;
-                    if(maxDepth < tempDepth) { maxDepth = tempDepth; }
+                    if (maxDepth < tempDepth)
+                    {
+                        maxDepth = tempDepth;
+                    }
                     break;
                 }
             }
@@ -90,15 +94,18 @@ ACTrie::ACTrie(const std::vector<std::string>& needles) : needles(needles)
                 // set new node to current node
                 currentNode = newNode.index.pos();
 
-
                 // look at next char in needle
                 charPos++;
                 tempDepth++;
-                if(maxDepth < tempDepth) { maxDepth = tempDepth; }
+                if (maxDepth < tempDepth)
+                {
+                    maxDepth = tempDepth;
+                }
             }
 
             // move to next needle if viewed at all chars
-            if (charPos == currentNeedle.size()) break;
+            if (charPos == currentNeedle.size())
+                break;
         }
 
         // don't forget!!
@@ -107,11 +114,10 @@ ACTrie::ACTrie(const std::vector<std::string>& needles) : needles(needles)
 
     // ------------------- ADD SUFFIX-LINKS --------------------------------------------------------------------------------------
 
-    
     // create queue (recycle tempDepth and use maxDepth)
     std::queue<ACNode> queue{};
 
-    for(tempDepth = 1; tempDepth <= maxDepth; tempDepth++)
+    for (tempDepth = 1; tempDepth <= maxDepth; tempDepth++)
     {
         for (ACNode element : Trie)
         {
@@ -128,7 +134,7 @@ ACTrie::ACTrie(const std::vector<std::string>& needles) : needles(needles)
     while (queue.empty() == false)
     {
         // nodes on level 1 always have root as suffix link
-        if(queue.front().depth == 1)
+        if (queue.front().depth == 1)
         {
             Trie[queue.front().index.pos()].suffix_link = 0;
         }
@@ -138,7 +144,7 @@ ACTrie::ACTrie(const std::vector<std::string>& needles) : needles(needles)
             ACNode currentNode = Trie[Trie[queue.front().parent_link].suffix_link];
             do
             {
-                for(uint32_t nodeIndex : currentNode.children)
+                for (uint32_t nodeIndex : currentNode.children)
                 {
                     if (Trie[nodeIndex].character == queue.front().character)
                     {
@@ -152,7 +158,7 @@ ACTrie::ACTrie(const std::vector<std::string>& needles) : needles(needles)
             // last round with roots children
             if (Trie[queue.front().index.pos()].suffix_link == 0 && queue.front().depth != 1)
             {
-                for(uint32_t nodeIndex : currentNode.children)
+                for (uint32_t nodeIndex : currentNode.children)
                 {
                     if (Trie[nodeIndex].character == queue.front().character)
                     {
@@ -160,17 +166,12 @@ ACTrie::ACTrie(const std::vector<std::string>& needles) : needles(needles)
                     }
                 }
             }
-
-            
         }
 
         queue.pop();
     }
 
-
     // ------------------- ADD OUTPUT-LINKS --------------------------------------------------------------------------------------
-
-
 
     // step through queue
     while (outputQueue.empty() == false)
@@ -182,10 +183,10 @@ ACTrie::ACTrie(const std::vector<std::string>& needles) : needles(needles)
             ACNode currentNode = Trie[Trie[outputQueue.front().index.pos()].suffix_link];
 
             // follow the suffix links until at root or until output link is found
-            while(currentNode.index.pos() != 0)
+            while (currentNode.index.pos() != 0)
             {
                 // to check if end node see if needle_indeces is empty
-                if(currentNode.needle_indices.empty() == false)
+                if (currentNode.needle_indices.empty() == false)
                 {
                     Trie[outputQueue.front().index.pos()].output_link = currentNode.index.pos();
                     break;
@@ -197,8 +198,7 @@ ACTrie::ACTrie(const std::vector<std::string>& needles) : needles(needles)
     }
 }
 
-
-void ACTrie::setQuery(const std::string& haystack)
+void ACTrie::setQuery(const std::string &haystack)
 {
     // set query and reset current node
     query = haystack;
@@ -207,8 +207,7 @@ void ACTrie::setQuery(const std::string& haystack)
     tempPos = 0;
 }
 
-
-bool ACTrie::next(std::vector<Hit>& hits)
+bool ACTrie::next(std::vector<Hit> &hits)
 {
     hits.clear();
 
@@ -217,67 +216,73 @@ bool ACTrie::next(std::vector<Hit>& hits)
 
     while (hit == false)
     {
-        if(tempPos>=query.length()) return false;
-        if(curTrieNode.children.empty()) 
+        if (tempPos >= query.length())
+            return false;
+        if (curTrieNode.children.empty())
         {
             curTrieNode = Trie[0];
-            curHayPos=tempPos;
-            //curHayPos++;
-            //tempPos=curHayPos;
+            curHayPos = tempPos;
+            // curHayPos++;
+            // tempPos=curHayPos;
         }
 
-        //std::cout << "curHayPos: " << curHayPos << "; tempPos:  " << tempPos << "\n"; 
-        //std::cout << "Vergleich: " << curTrieNode.character<<".children"  << " - " << query[tempPos] << tempPos << "\n";
-        for(uint32_t child : curTrieNode.children)
+        // std::cout << "curHayPos: " << curHayPos << "; tempPos:  " << tempPos << "\n";
+        // std::cout << "Vergleich: " << curTrieNode.character<<".children"  << " - " << query[tempPos] << tempPos << "\n";
+        for (uint32_t child : curTrieNode.children)
         {
-            if(query[tempPos]==Trie[child].character)
+            if (query[tempPos] == Trie[child].character)
             {
                 isChild = true;
 
-                if(!Trie[child].needle_indices.empty())
+                if (!Trie[child].needle_indices.empty())
                 {
-                    //std::cout << "Hit!\n";
+                    // std::cout << "Hit!\n";
                     hit = true;
-                    for(uint32_t index : Trie[child].needle_indices)
+                    for (uint32_t index : Trie[child].needle_indices)
                     {
-                        hits.emplace_back(Hit(index, curHayPos)); 
-                        //std::cout << "curHayPos: "<<curHayPos<<"\n";
+                        if(curHayPos + Trie[child].depth == query.size() - 1)
+                        {
+                            hits.emplace_back(Hit(index, curHayPos + 1 ));    
+                        }
+                        else
+                        {
+                            hits.emplace_back(Hit(index, curHayPos));
+                        }
+                        // std::cout << "curHayPos: "<<curHayPos<<"\n";
                     }
                     uint32_t curOutputlink = Trie[child].output_link;
                     while (curOutputlink != 0)
                     {
-                        for(uint32_t index : Trie[curOutputlink].needle_indices)
+                        for (uint32_t index : Trie[curOutputlink].needle_indices)
                         {
-                            hits.emplace_back(Hit(index, curHayPos+(Trie[child].depth - Trie[curOutputlink].depth)));
-                            //std::cout << "tempPos: "<<tempPos<<"\n";
+                            hits.emplace_back(Hit(index, curHayPos + (Trie[child].depth - Trie[curOutputlink].depth)));
+                            // std::cout << "tempPos: "<<tempPos<<"\n";
                         }
 
                         curOutputlink = Trie[curOutputlink].output_link;
                     }
-                     
-                    
 
                     tempPos++;
-                    curTrieNode=Trie[child];
+                    curTrieNode = Trie[child];
                     return true;
                 }
-                
+
                 else
                 {
                     uint32_t curOutputlink = Trie[child].output_link;
                     while (curOutputlink != 0)
                     {
-                        for(uint32_t index : Trie[curOutputlink].needle_indices)
+                        for (uint32_t index : Trie[curOutputlink].needle_indices)
                         {
-                            hits.emplace_back(Hit(index, curHayPos+(Trie[child].depth - Trie[curOutputlink].depth)));
-                            //std::cout << "tempPos: "<<tempPos<<"\n";
+                            hits.emplace_back(Hit(index, curHayPos + (Trie[child].depth - Trie[curOutputlink].depth)));
+                            // std::cout << "tempPos: "<<tempPos<<"\n";
                         }
                         curOutputlink = Trie[curOutputlink].output_link;
                     }
 
                     tempPos++;
-                    curTrieNode=Trie[child];
-                    if(curTrieNode.output_link!=0)
+                    curTrieNode = Trie[child];
+                    if (curTrieNode.output_link != 0)
                     {
 
                         return true;
@@ -287,24 +292,21 @@ bool ACTrie::next(std::vector<Hit>& hits)
             }
         }
 
-        if(!isChild)
+        if (!isChild)
         {
             curHayPos++;
             tempPos++;
-            if(!curTrieNode.index.pos()==0)
+            if (!curTrieNode.index.pos() == 0)
             {
                 curHayPos++;
-                curTrieNode=Trie[curTrieNode.suffix_link];
+                curTrieNode = Trie[curTrieNode.suffix_link];
             }
         }
-        isChild=false;
-       
+        isChild = false;
     }
-    
 }
 
-
-std::string ACTrie::getTree() const 
+std::string ACTrie::getTree() const
 {
     // Start DFS from the root node
     return getSubtree(0);
@@ -312,7 +314,7 @@ std::string ACTrie::getTree() const
 
 std::string ACTrie::getSubtree(uint32_t nodeIndex) const
 {
-    const ACNode& node = Trie[nodeIndex];
+    const ACNode &node = Trie[nodeIndex];
 
     std::string result;
     result += node.character;
@@ -320,9 +322,7 @@ std::string ACTrie::getSubtree(uint32_t nodeIndex) const
     // Sort children nodes in alphabetical order
     std::vector<uint32_t> sortedChildren = node.children;
     std::sort(sortedChildren.begin(), sortedChildren.end(), [this](uint32_t a, uint32_t b)
-        {
-            return Trie[a].character < Trie[b].character;
-        });
+              { return Trie[a].character < Trie[b].character; });
 
     // Append string representation of each child subtree
     for (uint32_t childIndex : sortedChildren)
