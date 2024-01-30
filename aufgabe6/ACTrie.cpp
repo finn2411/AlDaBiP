@@ -314,6 +314,11 @@ std::string ACTrie::getTree() const
 
 std::string ACTrie::getSubtree(uint32_t nodeIndex) const
 {
+    if (nodeIndex >= Trie.size()) {
+        // Handle the case where the index is out of bounds...
+        return "";
+    }
+
     const ACNode &node = Trie[nodeIndex];
 
     std::string result;
@@ -327,7 +332,7 @@ std::string ACTrie::getSubtree(uint32_t nodeIndex) const
     // Append string representation of each child subtree
     for (uint32_t childIndex : sortedChildren)
     {
-        if (Trie[childIndex].depth > node.depth)
+        if (childIndex < Trie.size() && Trie[childIndex].depth > node.depth)
         // Only consider edges which increase in depth
         {
             result += "(" + getSubtree(childIndex) + ")";
