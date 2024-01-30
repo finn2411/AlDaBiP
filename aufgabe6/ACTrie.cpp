@@ -307,12 +307,6 @@ bool ACTrie::next(std::vector<Hit> &hits)
 }
 
 
-std::string ACTrie::getTree() const 
-{
-    // Start DFS from the root node
-    return getSubtree(0);
-}
-
 void ACTrie::dfs(const std::vector<ACNode>& Trie, uint32_t nodeIndex, std::string& result) const 
 {
     if(nodeIndex==Trie.size()||nodeIndex>Trie.size()){
