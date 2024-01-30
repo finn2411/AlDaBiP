@@ -240,9 +240,9 @@ bool ACTrie::next(std::vector<Hit> &hits)
                     hit = true;
                     for (uint32_t index : Trie[child].needle_indices)
                     {
-                        if(curHayPos + Trie[child].depth == query.size() - 1)
+                        if (curHayPos + Trie[child].depth == query.size() - 1)
                         {
-                            hits.emplace_back(Hit(index, curHayPos + 1 ));    
+                            hits.emplace_back(Hit(index, curHayPos + 1));
                         }
                         else
                         {
@@ -306,41 +306,33 @@ bool ACTrie::next(std::vector<Hit> &hits)
     }
 }
 
-
-void ACTrie::dfs(const std::vector<ACNode>& Trie, uint32_t nodeIndex, std::string& result) const 
+std::string ACTrie::getTree() const
 {
-    if(nodeIndex==Trie.size()||nodeIndex>Trie.size()){
-        return;
-    }
-    const ACNode& node = Trie[nodeIndex];
+    // Start DFS from the root node
+    return getSubtree(0);
+}
 
-    // Start a new subtree if the node is not the root and it increases in depth
-    if (node.character != '0' && node.depth > Trie[node.parent_link].depth) {
-        result.push_back('(');
-        result.push_back(node.character);
-    }
+std::string ACTrie::getSubtree(uint32_t nodeIndex) const
+{
+    const ACNode &node = Trie[nodeIndex];
 
-    // Recursively visit each child in alphabetical order
-    for (auto childIndex : node.children) {
-        if(childIndex==Trie.size()||childIndex>Trie.size()){
-            return;
+    std::string result;
+    result += node.character;
+
+    // Sort children nodes in alphabetical order
+    std::vector<uint32_t> sortedChildren = node.children;
+    std::sort(sortedChildren.begin(), sortedChildren.end(), [this](uint32_t a, uint32_t b)
+              { return Trie[a].character < Trie[b].character; });
+
+    // Append string representation of each child subtree
+    for (uint32_t childIndex : sortedChildren)
+    {
+        if (Trie[childIndex].depth > node.depth)
+        // Only consider edges which increase in depth
+        {
+            result += "(" + getSubtree(childIndex) + ")";
         }
-        dfs(Trie, childIndex, result);
     }
 
-    // Close the subtree
-    if (node.character != '0' && node.depth > Trie[node.parent_link].depth) {
-        result.push_back(')');
-    }
+    return result;
 }
-
-std::string ACTrie::getTree() const 
-{
-    std::string treeRepresentation = "0";
-
-    // Start DFS from root, assuming root is at index 0 in Trie
-    dfs(Trie, 0, treeRepresentation);
-
-    return treeRepresentation;
-}
-
