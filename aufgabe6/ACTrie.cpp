@@ -243,12 +243,19 @@ bool ACTrie::next(std::vector<Hit>& hits)
                         hits.emplace_back(Hit(index, curHayPos)); 
                         //std::cout << "curHayPos: "<<curHayPos<<"\n";
                     }
-
-                    for(uint32_t index : Trie[Trie[child].output_link].needle_indices)
+                    uint32_t curOutputlink = Trie[child].output_link;
+                    while (curOutputlink != 0)
                     {
-                        hits.emplace_back(Hit(index, tempPos));
-                        //std::cout << "tempPos: "<<tempPos<<"\n";
+                        for(uint32_t index : Trie[curOutputlink].needle_indices)
+                        {
+                            hits.emplace_back(Hit(index, curHayPos+(Trie[child].depth - Trie[curOutputlink].depth)));
+                            //std::cout << "tempPos: "<<tempPos<<"\n";
+                        }
+
+                        curOutputlink = Trie[curOutputlink].output_link;
                     }
+                     
+                    
 
                     tempPos++;
                     curTrieNode=Trie[child];
@@ -257,16 +264,22 @@ bool ACTrie::next(std::vector<Hit>& hits)
                 
                 else
                 {
-                    for(uint32_t index : Trie[Trie[child].output_link].needle_indices)
+                    uint32_t curOutputlink = Trie[child].output_link;
+                    while (curOutputlink != 0)
                     {
-                        hits.emplace_back(Hit(index, tempPos));
-                        //std::cout << "tempPos: "<<tempPos<<"\n";
+                        for(uint32_t index : Trie[curOutputlink].needle_indices)
+                        {
+                            hits.emplace_back(Hit(index, curHayPos+(Trie[child].depth - Trie[curOutputlink].depth)));
+                            //std::cout << "tempPos: "<<tempPos<<"\n";
+                        }
+                        curOutputlink = Trie[curOutputlink].output_link;
                     }
 
                     tempPos++;
                     curTrieNode=Trie[child];
                     if(curTrieNode.output_link!=0)
                     {
+
                         return true;
                     }
                     break;
@@ -280,6 +293,7 @@ bool ACTrie::next(std::vector<Hit>& hits)
             tempPos++;
             if(!curTrieNode.index.pos()==0)
             {
+                curHayPos++;
                 curTrieNode=Trie[curTrieNode.suffix_link];
             }
         }
