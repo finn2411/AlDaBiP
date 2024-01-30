@@ -80,7 +80,7 @@ private:
   // ....
 
   std::string getSubtree(uint32_t nodeIndex) const;
-
+  
   struct ACNode
   {
     char character = '0';
