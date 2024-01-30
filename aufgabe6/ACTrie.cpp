@@ -322,6 +322,9 @@ void ACTrie::dfs(const std::vector<ACNode>& Trie, uint32_t nodeIndex, std::strin
 
     // Recursively visit each child in alphabetical order
     for (auto childIndex : node.children) {
+        if(childIndex==Trie.size()||childIndex>Trie.size()){
+            return;
+        }
         dfs(Trie, childIndex, result);
     }
 
