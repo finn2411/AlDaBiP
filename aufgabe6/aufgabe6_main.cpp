@@ -5,39 +5,25 @@
 
 int main(int argc, const char *argv[])
 {
-    //std::vector<std::string> needles = {"A", "AB", "BAB", "BC", "BCA", "C", "CAA"};
-    std::vector<std::string> needles = { "AT", "TA", "A", "BTB", "C", "BTBB" };
-    const size_t len {10000000};
-    std::string garbage(len, 'Z');
-    std::string q = garbage + "BTB" + garbage + "BTB";
-    ACTrie test(needles);
-    test.setQuery(q);
-    //test.setQuery("NBCA");
-
-    std::vector<Hit> hits{};
-
-    bool nextBool = true;
-
-    uint16_t counter = 1;
-
-    while (nextBool == true)
+    if (argc > 2)
     {
-        std::cout << "next" << counter << ": \n";
-        nextBool = test.next(hits);
-        counter++;
-        for (Hit element : hits)
+        std::vector<std::string> needles{};
+        for (int i = 2; i < argc; i++) needles.push_back(argv[i]);
+        
+        ACTrie trie(needles);
+
+        trie.setQuery(argv[1]);
+        std::cout << "Hits (position in query, pattern):\n";
+
+        std::vector<Hit> hits;
+        while (trie.next(hits))
         {
-            std::cout << element.index << " " << element.pos << "\n";
+            for (Hit element : hits)
+            {
+                std::cout << "pos " << element.pos << ", " << needles[element.index] << "\n";
+            }
         }
     }
-
-    std::cout << test.getTree() << "\n";
     
-
-    //if(argc>2)
-    //{
-    //    ACTrie trie(const std::vector<std::string>& needles);
-    //}
-    //else throw std::logic_error("Command line does not have enough arguments!");
-    
+    else throw std::logic_error("Usage: ./aufgabe6_main query needle1 needle2 ... ");
 }
