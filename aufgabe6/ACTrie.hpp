@@ -80,7 +80,7 @@ private:
   // ....
 
   std::string getSubtree(uint32_t nodeIndex) const;
-
+  
   struct ACNode
   {
     char character = '0';
@@ -92,6 +92,9 @@ private:
     std::vector<uint32_t> children{};
     std::vector<uint32_t> needle_indices{};
   };
+
+  void dfs(const std::vector<ACNode>& Trie, uint32_t nodeIndex, std::string& result)const;
+
 
   std::vector<ACNode> Trie{};
 
