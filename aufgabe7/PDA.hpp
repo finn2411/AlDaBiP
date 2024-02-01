@@ -2,6 +2,9 @@
 
 // YOUR includes go here
 // ...
+#include <string>
+#include <vector>
+#include <stack>
 
 class PDA
 {
@@ -36,7 +39,21 @@ public:
     
 protected:
     // YOUR Member variables and functions here
+    struct Rule
+    {
+      Rule(char nt, char i, std::string s) : nonTerminal(nt), input(i), state(s) {};
+      
+      char nonTerminal{'0'};
+      char input{};
+      std::string state{};
+    };
 
+    PDA::State curState = PDA::State::IN_PROGRESS;
+
+    std::vector<Rule> grammar{};
+
+    std::stack<char> stack{};
+
+    std::vector<Rule> curNT{};
 
 };
-
