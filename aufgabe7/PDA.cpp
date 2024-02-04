@@ -32,13 +32,42 @@ PDA::PDA(const Language l)
         alphabet="acgu";
     }
 
+    else if (l == Language::BRACKETS)
+    {
+        grammar.emplace_back(Rule('0', '(', "1"));
+
+        grammar.emplace_back(Rule('1', ')', "1"));
+        grammar.emplace_back(Rule('1', '(', "1"));
+
+        alphabet = "()";
+    }
+
     stack.push('0'); // Start (S) für stack!
     
 }
 
+/*
+    0 -> (1
+    1 -> )0 | (0
+
+    S
+    (1
+    ()0
+    ()(1
+    ()((0
+    ()(((0
+    ()((()0
+    ()((())0
+    ()((()))
+*/
+
+
+
 
 PDA::State PDA::next(const char a)
 {
+
+    //std::cout << stack.top() << "\n";
     //std::string alphabet ="acgt$";
     //if(!alphabet.find(a)) return State::FAIL;
     //if(a != 'a' && a != 'c' && a != 'g' && a != 'u' && a != '$') return State::FAIL;
@@ -47,7 +76,7 @@ PDA::State PDA::next(const char a)
 
     curNT.clear();
 
-    if (a == '$' && stack.empty())
+    if (a == '$' && (stack.empty() || stack.top() == '1'))
     {
         return State::SUCCESS;
     }
