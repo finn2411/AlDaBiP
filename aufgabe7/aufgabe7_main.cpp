@@ -19,10 +19,24 @@ int main(int argc, const char *argv[])
     for (char character : query)
     {
         temp = test.next(character);
+        //if(temp==PDA::State::IN_PROGRESS) std::cout<< "Progress\n";
+
+        if (temp == PDA::State::FAIL)
+        {
+            break;
+        }
+    }
+
+    test.reset();
+
+    for (char character : query)
+    {
+        temp = test.next(character);
         if(temp==PDA::State::IN_PROGRESS) std::cout<< "Progress\n";
 
         if (temp == PDA::State::FAIL)
         {
+            std::cout<< "BREAK!\n";
             break;
         }
     }

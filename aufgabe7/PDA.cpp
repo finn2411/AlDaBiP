@@ -56,7 +56,7 @@ PDA::State PDA::next(const char a)
 
     else if (stack.empty())
     {
-        return State::FAIL;
+                return State::FAIL;
     }
     
     
@@ -76,7 +76,6 @@ PDA::State PDA::next(const char a)
     {
         std::copy_if(grammar.begin(), grammar.end(), std::back_inserter(curNT), [this](Rule x)
         { return x.nonTerminal == stack.top(); });
-
         
         stack.pop();
 
@@ -100,9 +99,9 @@ PDA::State PDA::next(const char a)
 
 void PDA::reset()
 {
-    grammar.clear();
     //std::stack<char>().swap(stack);
-    while(!stack.empty()){
+    while(!stack.empty())
+    {
         stack.pop();
     }
     stack.push('0');
