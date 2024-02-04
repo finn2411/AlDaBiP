@@ -55,5 +55,7 @@ protected:
     std::stack<char> stack{};
 
     std::vector<Rule> curNT{};
+    
+    std::string alphabet{};
 
 };
