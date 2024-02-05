@@ -41,8 +41,8 @@ protected:
     // YOUR Member variables and functions here
     struct Rule
     {
-      Rule(char nt, char i, std::string s) : nonTerminal(nt), input(i), state(s) {};
-      
+      Rule(char nt, char i, std::string s) : nonTerminal(nt), input(i), state(s){};
+
       char nonTerminal{'0'};
       char input{};
       std::string state{};
@@ -51,7 +51,6 @@ protected:
     PDA::State curState = PDA::State::FAIL;
 
     bool varLength{};
-    
 
     std::string endingNTs{};
 
@@ -60,7 +59,6 @@ protected:
     std::stack<char> stack{};
 
     std::vector<Rule> curNT{};
-    
-    std::string alphabet{};
 
+    std::string alphabet{};
 };
