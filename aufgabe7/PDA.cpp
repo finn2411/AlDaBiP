@@ -30,20 +30,27 @@ PDA::PDA(const Language l)
         grammar.emplace_back(Rule('4', 'c', "a"));
 
         alphabet="acgu";
+        varLength = false;
     }
 
     else if (l == Language::BRACKETS)
     {
-        grammar.emplace_back(Rule('0', '(', "1"));
+        grammar.emplace_back(Rule('0', '(', ")1"));
 
-        grammar.emplace_back(Rule('1', ')', "1"));
-        grammar.emplace_back(Rule('1', '(', "1"));
+        grammar.emplace_back(Rule('1', '(', "2"));
+        grammar.emplace_back(Rule('1', ')', "0"));
+
+        grammar.emplace_back(Rule('2', '(', "2"));
+        grammar.emplace_back(Rule('2', ')', "1"));
 
         alphabet = "()";
+        varLength = true;
+        endingNTs = "01";
     }
 
     stack.push('0'); // Start (S) für stack!
-    
+
+
 }
 
 /*
@@ -66,17 +73,38 @@ PDA::PDA(const Language l)
 
 PDA::State PDA::next(const char a)
 {
-
-    //std::cout << stack.top() << "\n";
+    // std::cout << stack.top() << "\n";
+    // std::cout << stack.size() << "\n";
     //std::string alphabet ="acgt$";
     //if(!alphabet.find(a)) return State::FAIL;
     //if(a != 'a' && a != 'c' && a != 'g' && a != 'u' && a != '$') return State::FAIL;
     if(alphabet.find(a)==std::string::npos && a !='$') return State::FAIL;
 
 
+    if((varLength == true) && a == '$' && curNT.size() == 0 &&  stack.size() == 0) return State::FAIL;
+
+    if((varLength == true) && a == '$' && endingNTs.find(curNT[0].nonTerminal)!=std::string::npos)
+    {
+        std::stack<char> tempStack{};
+        while(!stack.empty())
+        {
+            if(alphabet.find(stack.top())!=std::string::npos) tempStack.push(stack.top());
+            stack.pop();
+        }
+        
+        stack = tempStack;
+    }
+
+
     curNT.clear();
 
-    if (a == '$' && (stack.empty() || stack.top() == '1'))
+    if ((a == '$' && varLength == true) && (stack.size() < 3))
+    {
+        if (alphabet.find(stack.top())!=std::string::npos) return State::SUCCESS;
+        else return State::FAIL;
+    }
+
+    else if (a == '$' && stack.empty())
     {
         return State::SUCCESS;
     }
@@ -88,10 +116,10 @@ PDA::State PDA::next(const char a)
 
     else if (stack.empty())
     {
-                return State::FAIL;
+        return State::FAIL;
     }
     
-    
+
 
     /*if(stack.top() == 'a' || stack.top() == 'c' || stack.top() == 'g' || stack.top() == 'u')
     {
@@ -147,6 +175,6 @@ void PDA::reset()
     }
     stack.push('0');
 
-    PDA::curState=State::IN_PROGRESS;
+    PDA::curState=State::FAIL;
 
 }

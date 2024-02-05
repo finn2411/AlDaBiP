@@ -48,7 +48,12 @@ protected:
       std::string state{};
     };
 
-    PDA::State curState = PDA::State::IN_PROGRESS;
+    PDA::State curState = PDA::State::FAIL;
+
+    bool varLength{};
+    
+
+    std::string endingNTs{};
 
     std::vector<Rule> grammar{};
 

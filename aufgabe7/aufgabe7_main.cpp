@@ -13,18 +13,14 @@ int main(int argc, const char *argv[])
 {
     PDA::Language l = PDA::Language::BRACKETS;
     PDA test(l);
-    std::string query = "()((()))";
+    std::string query = "(()";
 
     PDA::State temp{};
     for (char character : query)
     {
         temp = test.next(character);
-        if(temp==PDA::State::IN_PROGRESS) std::cout<< "Progress\n";
+        if(temp==PDA::State::FAIL) std::cout<< "FAIL\n";
 
-        if (temp == PDA::State::FAIL)
-        {
-            break;
-        }
     }
 
  
