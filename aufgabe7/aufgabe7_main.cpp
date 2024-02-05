@@ -22,7 +22,6 @@ int main(int argc, const char *argv[])
         //checking if sequence has language BRACKETS
         if(seq.find('(')!=std::string::npos || seq.find(')')!=std::string::npos)
         {
-            std::string tempSeq{};
             l=PDA::Language::BRACKETS;
 
             //filtering non-bracket symbols  + #include <algorithm>
