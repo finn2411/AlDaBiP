@@ -29,7 +29,7 @@ int main(int argc, const char *argv[])
                 return c != '(' && c != ')';
             }), seq.end());
         }
-        std::cout << seq <<std::endl;
+        //Object with language (BRACKETS OR HAIRPINS) is created:
         PDA automat(l);
 
         //putting '$' on the end of the string!
