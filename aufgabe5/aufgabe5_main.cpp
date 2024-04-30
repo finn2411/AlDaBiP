@@ -8,7 +8,7 @@ aufgabe5
 #include "QGramIndex.hpp"
 #include <fstream>
 #include <iostream>
-#include <exception>
+
 
 int main(int argc, const char* argv[])
 {
